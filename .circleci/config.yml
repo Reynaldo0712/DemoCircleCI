@@ -4,16 +4,26 @@ jobs:
   build:
     docker:
       - image: cimg/base:stable
+
     steps:
       - checkout
 
+      # 1️⃣ Crear artifact principal
       - run:
-          name: Simular build
+          name: Build artifact
           command: |
-            echo "Construyendo aplicación..."
-            mkdir output
+            mkdir -p output
             echo "artifact generado correctamente" > output/app.txt
 
+      # 2️⃣ Generar ARTIFACT ID (ci-xxxx)
+      - run:
+          name: Generate CI Artifact ID
+          command: |
+            CI_ARTIFACT_ID="ci-${CIRCLE_PIPELINE_NUMBER}"
+            echo "CI_ARTIFACT_ID=${CI_ARTIFACT_ID}"
+            echo "${CI_ARTIFACT_ID}" > output/artifact-id.txt
+
+      # 3️⃣ Guardar artifacts en CircleCI
       - store_artifacts:
           path: output
           destination: build-artifacts
